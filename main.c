@@ -40,7 +40,7 @@ char	**sort_mass(char **str)
 		i = 0;
 		while (str[i] != NULL)
 		{
-			if (str[i + 1] != NULL && (ft_strcmp(str[i],str[i + 1])) > 0)
+			if (str[i + 1] != NULL && (ft_strcmp(str[i], str[i + 1])) > 0)
 			{
 				buf = str[i];
 				str[i] = str[i + 1];
@@ -53,14 +53,10 @@ char	**sort_mass(char **str)
 	return (str);
 }
 
-void	print_export(char **cp_env)// добавить в аргументы 0 0 вместо  i k 
+void	print_export(char **cp_env, int i, int k)
 {
-	int	i;
-	int	k;
 	int	flag;
 
-	i = 0;
-	k = 0;
 	cp_env = sort_mass(cp_env);
 	while (cp_env[i] != NULL)
 	{
@@ -85,20 +81,142 @@ void	print_export(char **cp_env)// добавить в аргументы 0 0 в
 	}
 }
 
-char *reading_str(struct termios term, t_history **history, t_untils *untils)
+t_history	*down(t_untils *untils, t_history *tmp, t_read_str *rd)
 {
-	int l;
-	char buff[5];
-	char *line;
-	char b[2];
-	t_history *tmp;
-	char *save;
-	char *temporary;
+	char	*temporary;
 
-	tmp = ft_lstnew(NULL);
-	ft_lstadd_back(history, tmp);
-	untils->flag_up_down = 0;
-	line = NULL;
+	if (tmp->next)
+	{
+		untils->flag_up_down = 1;
+		tputs(tgetstr("rc", 0), 1, ft_putchar);
+		tputs(tgetstr("ce", 0), 1, ft_putchar);
+		if (rd->line)
+		{
+			temporary = tmp->content;
+			tmp->content = ft_strjoin_line(tmp->content, rd->line);
+			ft_free(rd->line);
+			ft_free(temporary);
+			rd->line = 0;
+		}
+		tmp = tmp->next;
+		write(1, tmp->content, ft_strlen_b(tmp->content));
+	}
+	return (tmp);
+}
+
+t_history	*up(t_untils *untils, t_history *tmp, t_read_str *rd)
+{
+	char	*temporary;
+
+	if (tmp->back)
+	{
+		untils->flag_up_down = 1;
+		tputs(tgetstr("rc", 0), 1, ft_putchar);
+		tputs(tgetstr("ce", 0), 1, ft_putchar);
+		if (rd->line)
+		{
+			temporary = tmp->content;
+			tmp->content = ft_strjoin_line(tmp->content, rd->line);
+			ft_free(rd->line);
+			ft_free(temporary);
+			rd->line = 0;
+		}
+		tmp = tmp->back;
+		write(1, tmp->content, ft_strlen_b(tmp->content));
+	}
+	return (tmp);
+}
+
+static t_history	*slash_e(t_history *tmp, t_untils *untils, t_read_str *rd)
+{
+	char	b[2];
+	char	*temporary;
+
+	read (0, b, 2);
+	if (b[0] == '[' && b[1] == 'A')
+		tmp = up(untils, tmp, rd);
+	if (b[0] == '[' && b[1] == 'B')
+		tmp = down(untils, tmp, rd);
+	return (tmp);
+}
+
+t_history	*while_step(t_history *tmp, t_untils *untils, t_read_str *rd)
+{
+	while (tmp->back)
+	{
+		if (tmp->line)
+		{
+			ft_free(tmp->content);
+			tmp->content = ft_strdup_b(tmp->line);
+		}
+		tmp = tmp->back;
+	}
+	if (rd->line && untils->flag == 1)
+	{
+		untils->first = ft_strdup_b(tmp->content);
+		untils->flag = 0;
+	}
+	while (tmp->back)
+		tmp = tmp->back;
+	return (tmp);
+}
+
+static char	*slash_n(t_history *tmp, t_untils *untils, t_read_str *rd)
+{
+	char	*save;
+	char	*temporary;
+
+	write(1, "\n", 1);
+	save = ft_strjoin_line(tmp->content, rd->line);
+	while (tmp->next)
+		tmp = tmp->next;
+	temporary = tmp->content;
+	tmp->content = ft_strdup_b(save);
+	ft_free(temporary);
+	ft_free(save);
+	tmp = while_step(tmp, untils, rd);
+	if (tmp->content)
+	{
+		ft_free(tmp->content);
+		tmp->content = ft_strdup_b(untils->first);
+	}
+	while (tmp->next)
+		tmp = tmp->next;
+	ft_free(rd->line);
+	return (ft_strdup_b(tmp->content));
+}
+
+void	backspace_22(t_untils *untils, t_history *tmp, t_read_str *rd)
+{
+	if (untils->flag_up_down == 1)
+	{
+		tputs(tgetstr("rc", 0), 1, ft_putchar);
+		tputs(tgetstr("ce", 0), 1, ft_putchar);
+		if (ft_strlen_b(rd->line) && rd->line)
+			rd->line = backspace(rd->line);
+		else
+			tmp->content = backspace(tmp->content);
+		write(1, tmp->content, ft_strlen_b(tmp->content));
+		write(1, rd->line, ft_strlen_b(rd->line));
+	}
+	else
+	{
+		tputs(tgetstr("rc", 0), 1, ft_putchar);
+		tputs(tgetstr("ce", 0), 1, ft_putchar);
+		rd->line = backspace(rd->line);
+		write(1, rd->line, ft_strlen_b(rd->line));
+	}
+}
+
+static void	ctr_d(t_read_str *rd)
+{
+	printf("exit\n");
+	ft_free(rd->line);
+	exit(0);
+}
+
+t_history	*step_tmp(t_history *tmp)
+{
 	while (tmp->back)
 	{
 		if (tmp->line == NULL)
@@ -107,177 +225,113 @@ char *reading_str(struct termios term, t_history **history, t_untils *untils)
 	}
 	while (tmp->next)
 		tmp = tmp->next;
+	return (tmp);
+}
+
+void	write_sym(t_read_str *rd, char buff)
+{
+	write (1, &buff, 1);
+	rd->line = ft_strjoin_b(rd->line, &buff);
+}
+
+char	*while_1(t_untils *untils, t_history *tmp, t_read_str *rd)
+{
+	char	buff[5];
+
 	while (1)
 	{
 		if (g_sig_f == 1)
 			break ;
 		ft_memset(buff, 0, 5);
-		l = read (0, buff, 1);
-
+		read (0, buff, 1);
 		if (buff[0] == '\n')
-		{
-			write(1, "\n", 1);
-			save = ft_strjoin_line(tmp->content, line);
-			while (tmp->next)
-				tmp = tmp->next;
-			temporary = tmp->content;
-			tmp->content = ft_strdup_b(save);
-			ft_free(temporary);
-			ft_free(save);
-			while (tmp->back)
-			{
-				if (tmp->line)
-				{
-					ft_free(tmp->content);
-					tmp->content = ft_strdup_b(tmp->line);
-				}
-				tmp = tmp->back;
-			}
-			if (line && untils->flag == 1)
-			{
-				untils->first = ft_strdup_b(tmp->content);
-				untils->flag = 0;
-			}
-			while (tmp->back)
-				tmp = tmp->back;
-			if (tmp->content)
-			{
-				ft_free(tmp->content);
-				tmp->content = ft_strdup_b(untils->first);
-			}
-			while (tmp->next)
-				tmp = tmp->next;
-			ft_free(line);
-			return (ft_strdup_b(tmp->content));
-		}
+			return (slash_n(tmp, untils, rd));
 		else if (buff[0] == '\e')
-		{
-			read (0, b, 2);
-			if (b[0] == '[' && b[1] == 'A')
-			{
-				if (tmp->back)
-				{
-					untils->flag_up_down = 1;
-					tputs(tgetstr("rc", 0), 1, ft_putchar); //restore cursor
-					tputs(tgetstr("ce", 0), 1, ft_putchar);
-					if (line)
-					{
-						temporary = tmp->content;
-						tmp->content = ft_strjoin_line(tmp->content, line);
-						ft_free(line);
-						ft_free(temporary);
-						line = 0;
-					}
-					tmp = tmp->back;
-					write(1, tmp->content, ft_strlen_b(tmp->content));
-				}
-			}
-			if (b[0] == '[' && b[1] == 'B')
-			{
-				if (tmp->next)
-				{
-					untils->flag_up_down = 1;
-					tputs(tgetstr("rc", 0), 1, ft_putchar); //restore cursor
-					tputs(tgetstr("ce", 0), 1, ft_putchar);
-					if (line)
-					{
-						temporary = tmp->content;
-						tmp->content = ft_strjoin_line(tmp->content, line);
-						ft_free(line);
-						ft_free(temporary);
-						line = 0;
-					}
-					tmp = tmp->next;
-					write(1, tmp->content, ft_strlen_b(tmp->content));
-				}
-			}
-		}
-		else if (buff[0] == '\4' && !(ft_strlen(line)) && !(ft_strlen(tmp->content)))
-		{
-			printf("exit\n");
-			ft_free(line);
-			exit(0);
-		}
-		if (!(strcmp(buff, "\177")))
-		{
-			if (untils->flag_up_down == 1)
-			{
-				tputs(tgetstr("rc", 0), 1, ft_putchar); //restore cursor  возмо
-				tputs(tgetstr("ce", 0), 1, ft_putchar); //чистит до конца строки
-				if (ft_strlen_b(line) && line)
-					line = backspace(line);
-				else
-					tmp->content = backspace(tmp->content);
-				write(1, tmp->content, ft_strlen_b(tmp->content));
-				write(1, line, ft_strlen_b(line));
-			}
-			else
-			{
-				tputs(tgetstr("rc", 0), 1, ft_putchar); //restore cursor
-				tputs(tgetstr("ce", 0), 1, ft_putchar);
-				line = backspace(line);
-				write(1, line, ft_strlen_b(line));
-			}
-		}
-		if ((strcmp(buff, "\177") && buff[0] != '\e'))
+			tmp = slash_e(tmp, untils, rd);
+		else if (buff[0] == '\4' && !(ft_strlen(rd->line))
+			&& !(ft_strlen(tmp->content)))
+			ctr_d(rd);
+		if (!(ft_strcmp(buff, "\177")))
+			backspace_22(untils, tmp, rd);
+		if ((ft_strcmp(buff, "\177") && buff[0] != '\e'))
 		{
 			if (ft_isprint(buff[0]))
-			{
-				write (1, &buff[0], 1);
-				line = ft_strjoin_b(line, buff);
-			}
+				write_sym(rd, buff[0]);
 		}
 	}
+	return (0);
+}
+
+char	*reading_str(struct termios term, t_history **history, t_untils *untils)
+{
+	t_history	*tmp;
+	t_read_str	rd;
+	char		*for_wh;
+
+	tmp = ft_lstnew(NULL);
+	ft_lstadd_back(history, tmp);
+	untils->flag_up_down = 0;
+	rd.line = NULL;
+	tmp = step_tmp(tmp);
+	for_wh = while_1(untils, tmp, &rd);
+	if (for_wh != 0)
+		return (for_wh);
 	if (g_sig_f == 1)
 	{
-		ft_memset(buff, 0, 5);
 		write(1, "\n", 1);
-		free(line);
-		line = 0;
+		free(rd.line);
+		rd.line = 0;
 		g_sig_f = 0;
-		return(0);
+		return (0);
 	}
-	ft_free(line);
+	ft_free(rd.line);
 	return (ft_strdup_b(tmp->content));
 }
 
-int main(int argc, char **argv, char **envp)
+void	test222(t_untils *untils, struct termios *term, struct termios *term2,
+	t_history *history)
 {
-	struct termios term;
-	struct termios term2;
-	char *line;
-	char *term_name;
-	t_history *history;
-	t_untils *untils;
+	char	*line;
 
-	history = NULL;
-	line = NULL;
-	untils = init_untils(untils);
-	term_name = "xterm-256color"; //костыль достать из envp, если нет то выходим из программы (везде где пользуемся переменными окружения проверяем есть ли она там)
-	tcgetattr(0, &term);
-	tcgetattr(0, &term2);
-	if (envp == 0)
-		exit(1);
-	term.c_lflag &= ~(ECHO);
-	term.c_lflag &= ~(ICANON);
-	term.c_cc[VMIN] = 0;
-    term.c_cc[VTIME] = 1;
-	signal(SIGINT, signal_c);
-	signal(SIGQUIT, SIG_IGN);
-	tgetent(0, term_name);
-	untils->env = copy_envp(envp, untils->env);
+	line = 0;
 	while (1)
 	{
-		tcsetattr(0, TCSANOW, &term);
+		tcsetattr(0, TCSANOW, term);
 		tputs("bash $> ", 1, ft_putchar);
 		tputs(save_cursor, 1, ft_putchar);
-		line = reading_str(term, &history, untils);
+		line = reading_str(*term, &history, untils);
 		clear_history(&history);
 		untils->fd_in = 99;
 		untils->fd_out = 99;
-		tcsetattr(0, TCSANOW, &term2);
+		tcsetattr(0, TCSANOW, term2);
 		if (line)
 			main_parser(line, untils);
 		ft_free(line);
 	}
+}
+
+int	main(int argc, char **argv, char **envp)
+{
+	struct termios	term;
+	struct termios	term2;
+	char			*term_name;
+	t_history		*history;
+	t_untils		*untils;
+
+	if (envp == 0)
+		exit(1);
+	history = NULL;
+	untils = init_untils(untils);
+	term_name = "xterm-256color";
+	tcgetattr(0, &term);
+	tcgetattr(0, &term2);
+	term.c_lflag &= ~(ECHO);
+	term.c_lflag &= ~(ICANON);
+	term.c_cc[VMIN] = 0;
+	term.c_cc[VTIME] = 1;
+	signal(SIGINT, signal_c);
+	signal(SIGQUIT, SIG_IGN);
+	tgetent(0, term_name);
+	untils->env = copy_envp(envp, untils->env);
+	test222(untils, &term, &term2, history);
 }

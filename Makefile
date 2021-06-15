@@ -8,7 +8,7 @@ LIST 	=	backspace.c \
 			export.c ft_lstadd_back.c ft_lstnew.c \
 			ft_lstsize.c ft_strdup.c ft_strjoin_line.c \
 			main.c pwd.c unset.c untils_func.c \
-			func_lst_tcommand.c check_double_semicolon.c \
+			func_lst_tcommand.c \
 			delete_tcommand.c ft_check_command.c \
 			ft_perror.c main_parser.c assigning_symbols_to_command.c \
 			parse_add_semicolon_to_end.c func_lst_parser.c \
@@ -48,7 +48,7 @@ lib:
 $(NAME): $(OBJS)
 		@make -C $(LIBFTD)
 		@make -C $(LIBFTD) bonus
-		$(CC) -ltermcap -O3 $(OBJS) $(LIBS) -o $(NAME) -lncurses -fsanitize=address
+		$(CC) -ltermcap -O3 $(OBJS) $(LIBS) -o $(NAME) -lncurses #-fsanitize=address
 
 $(OBJDIR)%.o: %.c Makefile
 	mkdir -p $(OBJDIR)

@@ -76,9 +76,8 @@ static void	check_bin_1(t_command *start, t_untils *untils)
 void	child_without_pip(t_command *start, t_untils *untils)
 {
 	int	process[1];
-	int i;
 
-	// ft_free(untils->command_ex);
+	ft_free(untils->command_ex);
 	untils->command_ex = ft_strdup_b(start->command);
 	process[0] = fork();
 	if (process[0] == 0)
@@ -97,10 +96,4 @@ void	child_without_pip(t_command *start, t_untils *untils)
 			&& !(check_bin(start->command)))
 			printf("%s: command not found\n", untils->command_ex);
 	}
-	i = 0;
-	while (untils->bin && untils->bin[i] != NULL)
-		ft_free(untils->bin[i++]);
-	ft_free(untils->bin);
-	if (untils->command_ex)
-		ft_free(untils->command_ex);
 }
