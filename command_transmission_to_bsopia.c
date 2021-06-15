@@ -1,12 +1,5 @@
 #include "minishell.h"
 
-t_command	*send_command_to_bsopia(t_untils *untils, t_cttb *cttb)
-{
-	bsopia_func(cttb->commands, 0, untils);
-	ft_lstclear_command(&cttb->commands);
-	return (0);
-}
-
 static int	command_transmission_to_bsopia3(t_cttb *cttb, t_untils *untils)
 {
 	cttb->tmp = cttb->end_command;
@@ -53,18 +46,6 @@ static void	command_transmission_to_bsopia5(t_cttb *cttb, t_untils *untils)
 	ft_bzero(cttb->string_before_doolar,
 		ft_strlen(cttb->current->symbol) + 1);
 	cttb->i_for_str_before_dollar = 0;
-}
-
-int	ccmd(t_cttb *cttb)
-{
-	if (cttb->current->special_array[cttb->j_env] == 0
-		|| cttb->current->special_array[cttb->j_env] == 5
-		|| cttb->current->symbol[cttb->j_env] == ';'
-		|| cttb->current->special_array[cttb->j_env] == 3
-		|| (cttb->current->special_array[0] == 2
-			&& cttb->current->special_array[cttb->j_env] == 2))
-		return (1);
-	return (0);
 }
 
 static	void	command_transmission_to_bsopia4(t_cttb *cttb, t_untils *untils)

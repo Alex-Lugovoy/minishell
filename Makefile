@@ -21,7 +21,10 @@ LIST 	=	backspace.c \
 			check_bin.c work_bin.c ft_exit_2.c redirect.c \
 			ft_execute_export.c fork_without_pip.c \
 			child_without_pip.c children_pip.c \
-			check_syntax_error.c
+			check_syntax_error.c history_2.c \
+			printable_export.c history_func.c \
+			main_parser_2.c redirect_check_2.c \
+			
 
 OBJDIR	=	objs/
 

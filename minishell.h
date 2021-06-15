@@ -218,5 +218,38 @@ void					children_pip(t_command *start, int count_pipes,
 							t_untils *untils);
 t_command				*check_syntax_error(char *str1, t_untils *untils);
 int						last(t_command *command, t_untils *untils, int error);
+t_history				*slash_e(t_history *tmp, t_untils *untils,
+							t_read_str *rd);
+t_history				*up(t_untils *untils, t_history *tmp,
+							t_read_str *rd);
+t_history				*down(t_untils *untils, t_history *tmp,
+							t_read_str *rd);
+t_history				*step_tmp(t_history *tmp);
+void					write_sym(t_read_str *rd, char buff);
+char					*while_1(t_untils *untils, t_history *tmp,
+							t_read_str *rd);
+void					print_env(char **cp_env);
+char					**sort_mass(char **str);
+t_history				*while_step(t_history *tmp, t_untils *untils,
+							t_read_str *rd);
+char					*slash_n(t_history *tmp, t_untils *untils,
+							t_read_str *rd);
+void					ctr_d(t_read_str *rd);
+void					backspace_22(t_untils *untils, t_history *tmp,
+							t_read_str *rd);
+t_command				*left_redirect1(t_command *com, t_command *start,
+							int gg);
+t_command				*left_redirect2(t_command *com, t_command *start,
+							int gg, t_untils *untils);
+t_command				*right_redirect1(t_command *com,
+							t_command *start, int gg);
+t_command				*right_double_redirect1(t_command *com,
+							t_command *start, int gg);
+t_command				*right_double_redirect_22(t_command *com,
+							t_command *start, int gg);
+t_command				*redirect_check_2(t_command *start, t_command *com,
+							t_untils *untils, int gg);
+int						ccmd(t_cttb *cttb);
+t_command				*send_command_to_bsopia(t_untils *untils, t_cttb *cttb);
 
 #endif
