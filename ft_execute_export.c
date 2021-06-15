@@ -4,7 +4,7 @@ static int	check_arg(t_command *list, t_untils *untils)
 {
 	if (!(list->next))
 	{
-		print_export(untils->env);
+		print_export(untils->env, 0, 0);
 		check_redir(list, 1, untils);
 		return (0);
 	}

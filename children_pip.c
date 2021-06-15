@@ -74,6 +74,7 @@ void	children_pip(t_command *start, int count_pipes, t_untils *untils)
 	int			j;
 	t_command	**command_pipes;
 	t_command	*current_pipe;
+	int			i;
 
 	current_pipe = 0;
 	command_pipes = malloc(sizeof(t_command *) * (count_pipes + 1));
@@ -95,4 +96,8 @@ void	children_pip(t_command *start, int count_pipes, t_untils *untils)
 	if (current_pipe != 0)
 		command_pipes[j] = current_pipe;
 	init_pipe(0, count_pipes, command_pipes, untils);
+	i = 0;
+	while (untils->bin && untils->bin[i] != NULL)
+		free(untils->bin[i++]);
+	ft_free(untils->bin);
 }
