@@ -6,12 +6,13 @@ t_parser	*assigning_symbols_to_command(t_parser *start)
 	t_parser	*current;
 	t_parser	*list_of_command;
 	int			*special_array;
-	int			j = 0;
+	int			j;
 	int			i;
 	char		*str;
 
 	new_start = start;
 	i = 0;
+	j = 0;
 	list_of_command = 0;
 	current = start;
 	while (current)
@@ -25,7 +26,6 @@ t_parser	*assigning_symbols_to_command(t_parser *start)
 			i = 0;
 			while (new_start != current)
 			{
-				//printf("1------------------------\n");
 				if (new_start->special != 1 && new_start->special != 2)
 				{
 					str[i] = new_start->symbol[0];
@@ -42,9 +42,9 @@ t_parser	*assigning_symbols_to_command(t_parser *start)
 					special_array[i] = new_start->special;
 				}
 			}
-			ft_lstadd_back_parser2(&list_of_command, ft_lstnew_parser2(str, 0, special_array));
+			ft_lstadd_back_parser2(&list_of_command,
+				ft_lstnew_parser2(str, 0, special_array));
 			i = 0;
-			//printf("2------------------------%d\n", special_array[0]);
 			if (new_start != 0)
 				new_start = new_start->next;
 		}
@@ -52,8 +52,7 @@ t_parser	*assigning_symbols_to_command(t_parser *start)
 	}
 	ft_lstclear_parser2(&start);
 	current = list_of_command->next;
-	//printf_list(current);
-	t_parser *temporary;
+	t_parser	*temporary;
 	while (current)
 	{
 		if (current->symbol[0] == '\0')

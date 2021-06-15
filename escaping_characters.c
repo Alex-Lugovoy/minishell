@@ -7,7 +7,7 @@ t_parser	*change_escape_code_in_double_quotes(t_parser *start)
 	current = start;
 	while (current)
 	{
-		if (current->special == 2)//для замены пробелы на значащий в двойных ковычках
+		if (current->special == 2)
 		{
 			current = current->next;
 			if (current == 0)

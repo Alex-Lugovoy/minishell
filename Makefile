@@ -48,7 +48,7 @@ lib:
 $(NAME): $(OBJS)
 		@make -C $(LIBFTD)
 		@make -C $(LIBFTD) bonus
-		$(CC) -ltermcap -O3 $(OBJS) $(LIBS) -o $(NAME) -lncurses #-fsanitize=address
+		$(CC) -ltermcap -O3 $(OBJS) $(LIBS) -o $(NAME) -lncurses -fsanitize=address
 
 $(OBJDIR)%.o: %.c Makefile
 	mkdir -p $(OBJDIR)

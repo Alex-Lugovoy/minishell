@@ -2,14 +2,12 @@
 
 t_command	*send_command_to_bsopia(t_untils *untils, t_cttb *cttb)
 {
-	//printf("lo***********************************************************************\n");
-	//printf_command_list(cttb->commands);
 	bsopia_func(cttb->commands, 0, untils);
 	ft_lstclear_command(&cttb->commands);
-	return 0;
+	return (0);
 }
 
-static	int	command_transmission_to_bsopia3(t_cttb *cttb, t_untils *untils)
+static int	command_transmission_to_bsopia3(t_cttb *cttb, t_untils *untils)
 {
 	cttb->tmp = cttb->end_command;
 	cttb->end_command = ft_strjoin(cttb->end_command,
@@ -32,43 +30,48 @@ static	int	command_transmission_to_bsopia3(t_cttb *cttb, t_untils *untils)
 	return (1);
 }
 
-static	void	command_transmission_to_bsopia5(t_cttb *cttb, t_untils *untils)
+static void	command_transmission_to_bsopia5(t_cttb *cttb, t_untils *untils)
 {
-	//printf("env tmp = %s %s\n", cttb->env_tmp, cttb->string_before_doolar);
 	if (cttb->env_tmp[0] == '?')
 		cttb->str_from_my_env = ft_strdup("$?+");
 	else
 		cttb->str_from_my_env = my_get_env(cttb->env_tmp, untils->env);
-	//printf("str from my env command = %s\n", cttb->str_from_my_env);
 	if (cttb->str_from_my_env == 0)
 		cttb->command_tmp = ft_calloc(1, 1);
 	else
 		cttb->command_tmp = cttb->str_from_my_env;
 	ft_free(cttb->env_tmp);
 	cttb->env_tmp = cttb->end_command;
-	cttb->end_command = ft_strjoin(cttb->end_command,cttb->string_before_doolar);
+	cttb->end_command = ft_strjoin(cttb->end_command,
+			cttb->string_before_doolar);
 	ft_free(cttb->env_tmp);
 	cttb->env_tmp = cttb->end_command;
-	cttb->end_command = ft_strjoin(cttb->end_command,cttb->command_tmp);
+	cttb->end_command = ft_strjoin(cttb->end_command, cttb->command_tmp);
 	ft_free(cttb->command_tmp);
 	ft_free(cttb->env_tmp);
 	cttb->i_env = cttb->j_env;
-	ft_bzero(cttb->string_before_doolar, ft_strlen(cttb->current->symbol) + 1);
+	ft_bzero(cttb->string_before_doolar,
+		ft_strlen(cttb->current->symbol) + 1);
 	cttb->i_for_str_before_dollar = 0;
-	//printf("end command = %s\n", cttb->end_command);
+}
+
+int	ccmd(t_cttb *cttb)
+{
+	if (cttb->current->special_array[cttb->j_env] == 0
+		|| cttb->current->special_array[cttb->j_env] == 5
+		|| cttb->current->symbol[cttb->j_env] == ';'
+		|| cttb->current->special_array[cttb->j_env] == 3
+		|| (cttb->current->special_array[0] == 2
+			&& cttb->current->special_array[cttb->j_env] == 2))
+		return (1);
+	return (0);
 }
 
 static	void	command_transmission_to_bsopia4(t_cttb *cttb, t_untils *untils)
 {
-	//printf("current = %s\n", cttb->current->symbol);
 	while (cttb->j_env < ft_strlen(cttb->current->symbol))
 	{
-		if (cttb->current->special_array[cttb->j_env] == 0
-			|| cttb->current->special_array[cttb->j_env] == 5
-			|| cttb->current->symbol[cttb->j_env] == ';'
-			|| cttb->current->special_array[cttb->j_env] == 3
-			|| (cttb->current->special_array[0] == 2
-				&& cttb->current->special_array[cttb->j_env] == 2))
+		if (ccmd(cttb) == 1)
 			break ;
 		if (cttb->current->symbol[cttb->j_env] == '?')
 		{
@@ -87,12 +90,10 @@ static	void	command_transmission_to_bsopia4(t_cttb *cttb, t_untils *untils)
 			= cttb->current->symbol[cttb->j_env];
 		cttb->j_env++;
 	}
-	//printf("current after = %s\n", cttb->current->symbol);
 }
 
 static	void	command_transmission_to_bsopia2(t_cttb *cttb, t_untils *untils)
 {
-	//printf("current symbol = %s\n", cttb->current->symbol);
 	while (cttb->i_env < ft_strlen(cttb->current->symbol))
 	{
 		if (cttb->current->special_array[cttb->i_env] == 5 )
@@ -118,7 +119,6 @@ static	void	command_transmission_to_bsopia2(t_cttb *cttb, t_untils *untils)
 	}
 }
 
-
 t_command	*command_transmission_to_bsopia(
 				t_parser *list_of_command, t_untils *untils)
 {
@@ -134,7 +134,6 @@ t_command	*command_transmission_to_bsopia(
 				ft_strlen(cttb.current->symbol) + 1,
 				ft_strlen(cttb.current->symbol) + 1);
 		cttb.i_for_str_before_dollar = 0;
-		//cttb.current = cttb.current->next;
 		command_transmission_to_bsopia2(&cttb, untils);
 		if (command_transmission_to_bsopia3(&cttb, untils) == 0)
 			break ;
