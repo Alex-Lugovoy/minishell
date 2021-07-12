@@ -27,8 +27,10 @@ static	int	ft_atoi_long_long(const char *nptr)
 	return ((int)(j * minus));
 }
 
-void	ft_exit2(t_command *command, t_untils *untils, int error)
+void	ft_exit2(t_command *command, t_untils *untils, int error, int i)
 {
+	if (i == 1)
+		printf("exit\n");
 	delete_current_parser_for_command_list(command);
 	delete_current_untils(untils);
 	exit(error);
@@ -43,7 +45,7 @@ static void	ft_exit_3(t_command *command, t_untils *untils, int error)
 		{
 			printf("exit\n%s: numeric argument required\n",
 				command->next->command);
-			ft_exit2(command, untils, 255);
+			ft_exit2(command, untils, 255, 0);
 		}
 		else if (ft_strlen(command->next->command)
 			== ft_strlen("-9223372036854775808"))
@@ -52,12 +54,12 @@ static void	ft_exit_3(t_command *command, t_untils *untils, int error)
 			{
 				printf("exit\n%s: numeric argument required\n",
 					command->next->command);
-				ft_exit2(command, untils, 255);
+				ft_exit2(command, untils, 255, 0);
 			}
 		}
 		error = (unsigned char)ft_atoi_long_long(command->next->command);
 		printf("exit\n");
-		ft_exit2(command, untils, error);
+		ft_exit2(command, untils, error, 0);
 	}
 }
 
@@ -66,7 +68,7 @@ static void	ft_exit_4(t_command *command, t_untils *untils, int error)
 	if (ft_strlen(command->next->command) > ft_strlen("9223372036854775807"))
 	{
 		printf("exit\n%s: numeric argument required\n", command->next->command);
-		ft_exit2(command, untils, 255);
+		ft_exit2(command, untils, 255, 0);
 	}
 	else if (ft_strlen(command->next->command)
 		== ft_strlen("9223372036854775807"))
@@ -75,11 +77,11 @@ static void	ft_exit_4(t_command *command, t_untils *untils, int error)
 		{
 			printf("exit\n%s: numeric argument required\n",
 				command->next->command);
-			ft_exit2(command, untils, 255);
+			ft_exit2(command, untils, 255, 0);
 		}
 	}
 	error = (unsigned char)ft_atoi_long_long(command->next->command);
-	ft_exit2(command, untils, error);
+	ft_exit2(command, untils, error, 0);
 }
 
 void	ft_exit(t_command *command, t_untils *untils)
@@ -97,7 +99,7 @@ void	ft_exit(t_command *command, t_untils *untils)
 			{
 				printf("exit\n%s: numeric argument required\n",
 					command->next->command);
-				ft_exit2(command, untils, 255);
+				ft_exit2(command, untils, 255, 0);
 			}
 		}
 		if (command->next->command[0] == '-')

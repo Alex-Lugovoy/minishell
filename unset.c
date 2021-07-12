@@ -22,7 +22,7 @@ static int	compare_to_equal(char *s1, char *s2)
 	return (0);
 }
 
-static int	check_name1(char *str)
+static int	check_name_unset(char *str)
 {
 	int	i;
 
@@ -68,7 +68,7 @@ static char	**f_unset_line_2(char **cp_env, char *str, int i)
 	return (new_env);
 }
 
-static void	love_norma(char *str, t_untils *untils)
+static void	print_invalid_arg(char *str, t_untils *untils)
 {
 	printf("unset: %s not a valid identifier\n", str);
 	untils->status = 1;
@@ -84,9 +84,9 @@ char	**f_unset_line(char **cp_env, char *str, t_untils *untils)
 	flag = 2;
 	if (!str)
 		return (cp_env);
-	if (check_name1(str))
+	if (check_name_unset(str))
 	{
-		love_norma(str, untils);
+		print_invalid_arg(str, untils);
 		return (cp_env);
 	}
 	while (cp_env[++i] != NULL)

@@ -96,7 +96,6 @@ static t_parser	*helper_function1(t_parser *start,
 				&& str[help->i + 2] == '\'')) && str[help->i + 1] != '\"'
 		&& str[help->i + 1] != '\'' && str[help->i + 1] != ' ')
 	{
-		printf("fsdfsd\n");
 		help->c[0] = str[help->i + 1];
 		if (str[help->i + 1] == '$')
 			ft_lstadd_back_parser2(&start, ft_lstnew_parser2(help->c, 5, 0));

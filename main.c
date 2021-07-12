@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-void	backspace_22(t_untils *untils, t_history *tmp, t_read_str *rd)
+void	delete_symbol(t_untils *untils, t_history *tmp, t_read_str *rd)
 {
 	if (untils->flag_up_down == 1)
 	{
@@ -22,14 +22,15 @@ void	backspace_22(t_untils *untils, t_history *tmp, t_read_str *rd)
 	}
 }
 
-void	ctr_d(t_read_str *rd)
+void	ctr_d(t_read_str *rd, struct termios *term2)
 {
 	printf("exit\n");
+	tcsetattr(0, TCSANOW, term2);
 	ft_free(rd->line);
 	exit(0);
 }
 
-char	*reading_str(struct termios term, t_history **history, t_untils *untils)
+char	*reading_str(struct termios term, t_history **history, t_untils *untils, struct termios *term2)
 {
 	t_history	*tmp;
 	t_read_str	rd;
@@ -40,7 +41,7 @@ char	*reading_str(struct termios term, t_history **history, t_untils *untils)
 	untils->flag_up_down = 0;
 	rd.line = NULL;
 	tmp = step_tmp(tmp);
-	for_wh = while_1(untils, tmp, &rd);
+	for_wh = main_while(untils, tmp, &rd, term2);
 	if (for_wh != 0)
 		return (for_wh);
 	if (g_sig_f == 1)
@@ -55,7 +56,7 @@ char	*reading_str(struct termios term, t_history **history, t_untils *untils)
 	return (ft_strdup_b(tmp->content));
 }
 
-void	test222(t_untils *untils, struct termios *term, struct termios *term2,
+void	get_cmd(t_untils *untils, struct termios *term, struct termios *term2,
 	t_history *history)
 {
 	char	*line;
@@ -66,7 +67,7 @@ void	test222(t_untils *untils, struct termios *term, struct termios *term2,
 		tcsetattr(0, TCSANOW, term);
 		tputs("bash $> ", 1, ft_putchar);
 		tputs(save_cursor, 1, ft_putchar);
-		line = reading_str(*term, &history, untils);
+		line = reading_str(*term, &history, untils, term2);
 		clear_history(&history);
 		untils->fd_in = 99;
 		untils->fd_out = 99;
@@ -100,5 +101,5 @@ int	main(int argc, char **argv, char **envp)
 	signal(SIGQUIT, SIG_IGN);
 	tgetent(0, term_name);
 	untils->env = copy_envp(envp, untils->env);
-	test222(untils, &term, &term2, history);
+	get_cmd(untils, &term, &term2, history);
 }

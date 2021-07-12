@@ -208,7 +208,7 @@ void					check_name_exit(t_command *command, t_untils *untils,
 void					check_name_exit_2(t_command *command, t_untils *untils,
 							int error);
 void					ft_exit2(t_command *command, t_untils *untils,
-							int error);
+							int error, int i);
 void					execute_export(t_untils *untils, t_command *list);
 void					connect_stdio_to_pipes(int prev_fds[], int next_fds[]);
 int						count_pipes(t_command *start);
@@ -226,16 +226,16 @@ t_history				*down(t_untils *untils, t_history *tmp,
 							t_read_str *rd);
 t_history				*step_tmp(t_history *tmp);
 void					write_sym(t_read_str *rd, char buff);
-char					*while_1(t_untils *untils, t_history *tmp,
-							t_read_str *rd);
+char					*main_while(t_untils *untils, t_history *tmp,
+							t_read_str *rd, struct termios *term2);
 void					print_env(char **cp_env);
 char					**sort_mass(char **str);
 t_history				*while_step(t_history *tmp, t_untils *untils,
 							t_read_str *rd);
 char					*slash_n(t_history *tmp, t_untils *untils,
 							t_read_str *rd);
-void					ctr_d(t_read_str *rd);
-void					backspace_22(t_untils *untils, t_history *tmp,
+void					ctr_d(t_read_str *rd, struct termios *term2);
+void					delete_symbol(t_untils *untils, t_history *tmp,
 							t_read_str *rd);
 t_command				*left_redirect1(t_command *com, t_command *start,
 							int gg);

@@ -66,9 +66,9 @@ t_command	*right_redirect1(t_command *com, t_command *start, int gg)
 
 t_command	*right_double_redirect1(t_command *com, t_command *start, int gg)
 {
-	ft_free(com->redir_right);
-	com->redir_right = ft_strdup(start->next->command);
-	gg = open(com->redir_right, O_CREAT | O_WRONLY | O_TRUNC, 0777);
+	ft_free(com->redir_double_right);
+	com->redir_double_right = ft_strdup(start->next->command);
+	gg = open(com->redir_double_right, O_CREAT | O_WRONLY | O_APPEND, 0777);
 	close (gg);
 	delete_current_parser(start->next);
 	if (start->back != 0)

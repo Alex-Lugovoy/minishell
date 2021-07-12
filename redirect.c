@@ -8,7 +8,7 @@ static int	right(t_command *list, t_untils *untils, int i)
 				O_CREAT | O_WRONLY | O_TRUNC, 0777);
 		if (untils->fd_out < 0)
 		{
-			printf("! %s !\n", strerror(errno));
+			printf("%s: %s\n", list->redir_right, strerror(errno));
 			untils->status = 1;
 			return (0);
 		}
@@ -27,7 +27,7 @@ static int	double_right(t_command *list, t_untils *untils, int i)
 				O_CREAT | O_WRONLY | O_APPEND, 0777);
 		if (untils->fd_out < 0)
 		{
-			printf("! %s !\n", strerror(errno));
+			printf("%s: %s\n", list->redir_double_right, strerror(errno));
 			untils->status = 1;
 			return (0);
 		}
@@ -45,7 +45,7 @@ static int	left(t_command *list, t_untils *untils, int i)
 		untils->fd_in = open(list->redir_left, O_RDWR);
 		if (untils->fd_in < 0)
 		{
-			printf("! %s !\n", strerror(errno));
+			printf("%s: %s\n", list->redir_left, strerror(errno));
 			untils->status = 1;
 			return (0);
 		}

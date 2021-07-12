@@ -65,7 +65,7 @@ void	write_sym(t_read_str *rd, char buff)
 	rd->line = ft_strjoin_b(rd->line, &buff);
 }
 
-char	*while_1(t_untils *untils, t_history *tmp, t_read_str *rd)
+char	*main_while(t_untils *untils, t_history *tmp, t_read_str *rd, struct termios *term2)
 {
 	char	buff[5];
 
@@ -81,9 +81,9 @@ char	*while_1(t_untils *untils, t_history *tmp, t_read_str *rd)
 			tmp = slash_e(tmp, untils, rd);
 		else if (buff[0] == '\4' && !(ft_strlen(rd->line))
 			&& !(ft_strlen(tmp->content)))
-			ctr_d(rd);
+			ctr_d(rd, term2);
 		if (!(ft_strcmp(buff, "\177")))
-			backspace_22(untils, tmp, rd);
+			delete_symbol(untils, tmp, rd);
 		if ((ft_strcmp(buff, "\177") && buff[0] != '\e'))
 		{
 			if (ft_isprint(buff[0]))

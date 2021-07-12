@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-static void	test2(t_untils *untils, int i, t_command **command_pipes)
+static void	child_proc(t_untils *untils, int i, t_command **command_pipes)
 {
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
@@ -8,7 +8,7 @@ static void	test2(t_untils *untils, int i, t_command **command_pipes)
 	work_pipes(untils, command_pipes[i]);
 }
 
-static void	test1(t_untils *untils, int i, int count_pipes)
+static void	connect_pipe(t_untils *untils, int i, int count_pipes)
 {
 	untils->prev_pipe_fds[0] = untils->next_pipe_fds[0];
 	untils->prev_pipe_fds[1] = untils->next_pipe_fds[1];
@@ -33,10 +33,10 @@ static void	pipe_wwork(t_untils *untils, t_command **command_pipes,
 	process = (int *)malloc(sizeof(int) * (count_pipes + 1));
 	while (++i < count_pipes + 1)
 	{
-		test1(untils, i, count_pipes);
+		connect_pipe(untils, i, count_pipes);
 		process[++j] = fork();
 		if (process[j] == 0)
-			test2(untils, i, command_pipes);
+			child_proc(untils, i, command_pipes);
 		close(untils->prev_pipe_fds[0]);
 		close(untils->prev_pipe_fds[1]);
 	}
